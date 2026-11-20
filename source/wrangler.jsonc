@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "keijiban-cfw",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-14",
+  "assets": {
+    "directory": "./public",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      // 本番のD1のUUID。
+      "database_id": "d62d0127-096f-4741-afcc-92c36be607d7",
+      // ローカル開発用ID。管理画面と揃え、既存のローカルDBを引き継ぐ。
+      "preview_database_id": "00000000-0000-4000-8000-000000000001",
+      "migrations_dir": "./migrations"
+    }
+  ]
+}

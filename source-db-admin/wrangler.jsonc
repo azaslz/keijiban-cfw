@@ -1,0 +1,20 @@
+{
+  // ローカル専用。Cloudflareへのデプロイ対象はsource/のみ。
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "keijiban-cfw-db-admin",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-14",
+  "assets": {
+    "directory": "./public",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      // source/wrangler.jsoncと同じD1のUUID。
+      "database_id": "d62d0127-096f-4741-afcc-92c36be607d7",
+      // source/wrangler.jsoncと同じローカルID・Composeの状態ボリュームを使う。
+      "preview_database_id": "00000000-0000-4000-8000-000000000001"
+    }
+  ]
+}
