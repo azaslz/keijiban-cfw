@@ -1,26 +1,89 @@
-const count = document.querySelector('#count');
-const increment = document.querySelector('#increment');
-const status = document.querySelector('#status');
-const retry = document.querySelector('#retry');
+const form = document.querySelector('#post-form');
+const nameInput = document.querySelector('#name');
+const bodyInput = document.querySelector('#body');
+const bodyCount = document.querySelector('#body-count');
+const submit = document.querySelector('#submit');
+const formStatus = document.querySelector('#form-status');
+const reload = document.querySelector('#reload');
+const list = document.querySelector('#posts');
+const listStatus = document.querySelector('#list-status');
+const template = document.querySelector('#post-template');
 
-async function updateCount(method = 'GET') {
-  increment.disabled = true;
-  retry.hidden = true;
-  status.textContent = method === 'POST' ? '保存中…' : '読み込み中…';
+const dateFormat = new Intl.DateTimeFormat('ja-JP', {
+  timeZone: 'Asia/Tokyo',
+  year: 'numeric', month: '2-digit', day: '2-digit',
+  hour: '2-digit', minute: '2-digit', second: '2-digit',
+});
+
+function renderPost(post) {
+  const item = template.content.firstElementChild.cloneNode(true);
+  item.querySelector('.post-id').textContent = `#${post.id}`;
+  item.querySelector('.post-name').textContent = post.name;
+  const time = item.querySelector('.post-time');
+  time.dateTime = post.created_at;
+  time.textContent = dateFormat.format(new Date(post.created_at));
+  // textContent で表示し、本文中のHTMLを解釈させない。
+  item.querySelector('.post-body').textContent = post.body;
+  return item;
+}
+
+async function loadPosts() {
+  reload.disabled = true;
+  listStatus.textContent = '読み込み中…';
+  listStatus.hidden = false;
   try {
-    const response = await fetch('/api/count', { method, cache: 'no-store' });
-    if (!response.ok) throw new Error('カウントを取得・保存できませんでした。再読み込みしてください。');
-    const data = await response.json();
-    if (!Number.isSafeInteger(data.count) || data.count < 0) throw new Error('カウントの応答が不正です。');
-    count.textContent = new Intl.NumberFormat('ja-JP').format(data.count);
-    status.textContent = 'カウントは自動で保存されます。';
-    increment.disabled = false;
+    const response = await fetch('/api/posts', { cache: 'no-store' });
+    if (!response.ok) throw new Error('投稿を読み込めませんでした。「更新」を押してください。');
+    const { posts } = await response.json();
+    list.replaceChildren(...posts.map(renderPost));
+    if (posts.length === 0) {
+      listStatus.textContent = 'まだ投稿はありません。最初の書き込みをどうぞ！';
+    } else {
+      listStatus.hidden = true;
+    }
   } catch (error) {
-    status.textContent = error.message;
-    retry.hidden = false;
+    listStatus.textContent = error.message;
+  } finally {
+    reload.disabled = false;
   }
 }
 
-increment.addEventListener('click', () => updateCount('POST'));
-retry.addEventListener('click', () => updateCount());
-updateCount();
+function setFormStatus(message, isError = false) {
+  formStatus.textContent = message;
+  formStatus.classList.toggle('error', isError);
+}
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const body = bodyInput.value.trim();
+  if (!body) {
+    setFormStatus('本文を入力してください。', true);
+    bodyInput.focus();
+    return;
+  }
+  submit.disabled = true;
+  setFormStatus('投稿中…');
+  try {
+    const response = await fetch('/api/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: nameInput.value, body }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error ?? '投稿できませんでした。もう一度お試しください。');
+    bodyInput.value = '';
+    bodyCount.textContent = '0';
+    setFormStatus('投稿しました！');
+    await loadPosts();
+  } catch (error) {
+    setFormStatus(error.message, true);
+  } finally {
+    submit.disabled = false;
+  }
+});
+
+bodyInput.addEventListener('input', () => {
+  bodyCount.textContent = String(bodyInput.value.length);
+});
+reload.addEventListener('click', loadPosts);
+loadPosts();

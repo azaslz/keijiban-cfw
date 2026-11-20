@@ -1,14 +1,88 @@
-:root { font-family: system-ui, sans-serif; color: #19243b; background: #f3f5fa; }
+:root {
+  --bg: #f4f6fb;
+  --surface: #ffffff;
+  --border: #e3e7f0;
+  --text: #1a2338;
+  --muted: #64708a;
+  --accent: #3b5bdb;
+  --accent-hover: #2f4ac0;
+  --accent-soft: #edf1ff;
+  --danger: #d6336c;
+  --radius: 16px;
+  font-family: "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
 * { box-sizing: border-box; }
-body { margin: 0; min-height: 100svh; display: grid; place-items: center; padding: 24px; }
-.counter { width: min(100%, 440px); padding: 40px 24px; background: #fff; border: 1px solid #e0e5ee; border-radius: 20px; text-align: center; box-shadow: 0 12px 36px #19243b0a; }
-h1 { font-size: 24px; margin: 0 0 12px; }
-.description, #status { color: #596579; line-height: 1.6; }
-.description { font-size: 14px; }
-#count { display: block; font-size: clamp(48px, 12vw, 80px); font-weight: 700; font-variant-numeric: tabular-nums; margin: 30px 0; overflow-wrap: anywhere; }
-button { border: 0; border-radius: 10px; background: #315ae8; color: #fff; font: inherit; font-weight: 600; padding: 15px 24px; cursor: pointer; }
-button:hover:not(:disabled) { background: #2447bd; }
-button:focus-visible { outline: 3px solid #93b1ff; outline-offset: 4px; }
-button:disabled { opacity: .5; cursor: wait; }
-#status { font-size: 13px; min-height: 21px; margin: 20px 0 0; }
-#retry { margin-top: 16px; background: #e9edf7; color: #19243b; }
+body { margin: 0; min-height: 100svh; line-height: 1.7; background: var(--bg); }
+
+.site-header { text-align: center; padding: 48px 16px 24px; }
+.site-header h1 { margin: 0; font-size: clamp(26px, 5vw, 34px); letter-spacing: .04em; }
+.lead { margin: 6px 0 0; color: var(--muted); font-size: 14px; }
+
+.layout { width: min(100% - 32px, 720px); margin: 0 auto 64px; display: grid; gap: 32px; }
+h2 { font-size: 17px; margin: 0 0 16px; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: 0 8px 28px #1a23380a;
+}
+
+.field { display: grid; gap: 6px; margin-bottom: 16px; }
+.label { font-size: 14px; font-weight: 600; }
+.label small { font-weight: 400; color: var(--muted); }
+.label .required { color: var(--danger); margin-left: 4px; }
+input, textarea {
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #fbfcfe;
+  transition: border-color .15s, box-shadow .15s;
+}
+textarea { resize: vertical; min-height: 120px; }
+input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); background: #fff; }
+.counter-text { justify-self: end; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.form-status { margin: 0; font-size: 13px; color: var(--muted); min-height: 1.7em; }
+.form-status.error { color: var(--danger); }
+
+button {
+  border: 0;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  padding: 11px 26px;
+  cursor: pointer;
+  transition: background .15s;
+}
+button:hover:not(:disabled) { background: var(--accent-hover); }
+button:focus-visible { outline: 3px solid #9fb4ff; outline-offset: 3px; }
+button:disabled { opacity: .55; cursor: wait; }
+button.ghost { background: var(--accent-soft); color: var(--accent); padding: 7px 16px; font-size: 14px; }
+button.ghost:hover:not(:disabled) { background: #dfe6ff; }
+
+.list-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.list-header h2 { margin: 0; }
+.list-status { color: var(--muted); font-size: 14px; text-align: center; padding: 24px 0; margin: 0; }
+
+.posts { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.post { padding: 18px 22px; }
+.post-meta { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.post-id { font-variant-numeric: tabular-nums; }
+.post-name { font-weight: 700; color: #2b8a3e; }
+.post-time { margin-left: auto; font-variant-numeric: tabular-nums; }
+.post-body { margin: 8px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+@media (max-width: 480px) {
+  .card { padding: 18px; }
+  .post-time { margin-left: 0; width: 100%; }
+}
